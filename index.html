@@ -13,7 +13,7 @@
         .bg-surface { background-color: #161618; }
         .border-gray { border-color: #262629; }
         .glow-cyan:hover { box-shadow: 0 0 15px rgba(0, 245, 212, 0.3); }
-        .category-tab.active { border-bottom: 2px solid #00F5D4; color: #00F5D4; }
+        .forum-card:hover { border-color: #00F5D4; background-color: #1a1a1c; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #0A0A0B; }
         ::-webkit-scrollbar-thumb { background: #262629; border-radius: 10px; }
@@ -21,12 +21,37 @@
 </head>
 <body class="min-h-screen flex flex-col h-screen overflow-hidden">
 
+    <div id="welcome-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="bg-surface border border-gray p-8 rounded-[2.5rem] max-w-md w-full shadow-2xl text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00F5D4] to-transparent"></div>
+            
+            <h2 class="font-syne text-4xl tracking-tighter accent-cyan mb-4 uppercase italic">Plug In.</h2>
+            <p class="text-sm text-gray-400 mb-8 leading-relaxed">
+                PeerPlug is the world's first **Social Rack**. Get expert mix feedback, share plugin chains, and discover tools used by top producers in real-time.
+            </p>
+
+            <div class="space-y-4">
+                <div class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#FF4081] mb-2">First Session Discount</div>
+                <input type="email" id="user-email" placeholder="Enter your email for 10% OFF" 
+                    class="w-full bg-black border border-gray rounded-xl p-4 text-sm focus:outline-none focus:border-[#00F5D4] text-center transition-all">
+                
+                <button onclick="closeWelcome()" class="w-full bg-[#00F5D4] text-black py-4 rounded-xl font-bold text-xs glow-cyan uppercase tracking-widest transition-transform active:scale-95">
+                    Claim Discount & Enter
+                </button>
+                
+                <button onclick="closeWelcome()" class="text-[10px] text-gray-600 hover:text-gray-400 uppercase font-bold tracking-widest">
+                    Skip and continue to feed
+                </button>
+            </div>
+        </div>
+    </div>
+
     <nav class="border-b border-gray p-4 flex justify-between items-center bg-black/90 backdrop-blur-md z-50">
         <h1 class="font-syne text-2xl tracking-tighter accent-cyan">PEERPLUG🔌</h1>
         <div class="space-x-8 hidden md:flex text-[10px] font-bold uppercase tracking-[0.2em]">
             <a href="#" onclick="showSection('feed')" class="nav-link hover:text-cyan-400 transition-colors">The Feed</a>
             <a href="#" onclick="showSection('forum')" class="nav-link hover:text-cyan-400 transition-colors">Submit Your Mix</a>
-            <a href="#" onclick="showSection('market')" class="nav-link hover:text-cyan-400 transition-colors">Marketplace</a>
+            <a href="#" class="hover:text-cyan-400 transition-colors">Marketplace</a>
             <a href="#" class="text-[#FF4081]">Deals</a>
         </div>
         <div class="flex items-center space-x-4">
@@ -37,128 +62,154 @@
 
     <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
         
-        <aside id="market-sidebar" class="hidden w-full md:w-64 border-r border-gray bg-surface p-6 flex flex-col h-full overflow-y-auto">
-            <h2 class="font-syne text-sm tracking-widest uppercase mb-6 opacity-50">Categories</h2>
-            <div class="space-y-4">
-                <button class="w-full text-left text-xs font-bold hover:text-[#00F5D4] transition-colors">ALL PLUGINS</button>
-                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">COMPRESSION</button>
-                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">EQUALIZERS</button>
-                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">SATURATION</button>
-                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">REVERB & DELAY</button>
-                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">SYNTHS</button>
+        <aside class="w-full md:w-80 border-r border-gray bg-surface p-6 flex flex-col h-full overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="font-syne text-lg tracking-tight">THE BRAIN AI</h2>
+                <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00F5D4] opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-[#00F5D4]"></span>
+                </span>
             </div>
+
+            <div id="ai-chat-box" class="flex-1 bg-black rounded-xl p-4 mb-4 text-sm overflow-y-auto space-y-4 border border-gray">
+                <p class="text-gray-500 text-[10px] uppercase font-bold tracking-widest text-center">AI Active</p>
+                <div id="ai-chips" class="pt-2 space-y-2">
+                    <button onclick="aiAsk('My low-end feels muddy...', 'muddiness')" class="w-full text-left p-3 rounded-lg border border-gray hover:border-[#00F5D4] transition-all text-xs text-gray-400 hover:text-white bg-white/5">
+                        🔌 "Fix my muddy low-end"
+                    </button>
+                    <button onclick="aiAsk('How do I get Travis Scott vocals?', 'vocal')" class="w-full text-left p-3 rounded-lg border border-gray hover:border-[#00F5D4] transition-all text-xs text-gray-400 hover:text-white bg-white/5">
+                        🎤 "Travis Scott vocal chain"
+                    </button>
+                </div>
+                <div id="ai-response"></div>
+            </div>
+            <input type="text" placeholder="Ask The Brain..." class="w-full bg-black border border-gray rounded-lg p-3 text-sm focus:outline-none focus:border-[#00F5D4]">
         </aside>
 
         <section id="main-content" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 bg-black">
             
-            <div id="market-section" class="hidden animate-in fade-in duration-500">
-                <div class="mb-10">
-                    <h2 class="font-syne text-4xl tracking-tighter uppercase italic mb-4">The Plugin Rack</h2>
-                    <div class="flex space-x-6 border-b border-gray text-[10px] font-bold uppercase tracking-widest pb-2">
-                        <a href="#" class="category-tab active">Trending</a>
-                        <a href="#" class="category-tab">Dynamics</a>
-                        <a href="#" class="category-tab">Tone</a>
-                        <a href="#" class="category-tab">Spatial</a>
+            <div id="forum-section" class="hidden animate-in fade-in duration-500">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="font-syne text-3xl tracking-tight mb-2 uppercase italic">Submit Your Mix</h2>
+                        <p class="text-gray-400 text-sm">Get expert feedback and earn commissions on recommended plugs.</p>
                     </div>
+                    <button class="bg-[#FF4081] text-white px-6 py-2 rounded font-black text-xs glow-cyan">UPLOAD .WAV</button>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    
-                    <div class="lg:col-span-4">
-                        <div class="bg-surface border border-gray p-6 rounded-3xl sticky top-0">
-                            <div class="aspect-square bg-gradient-to-br from-cyan-900/20 to-black rounded-xl mb-6 flex items-center justify-center border border-gray">
-                                <span class="font-syne text-4xl opacity-20">S+</span>
-                            </div>
-                            <h3 class="font-bold text-2xl mb-1">Saturn 2</h3>
-                            <p class="text-xs text-gray-500 mb-4">Multi-band Saturation & Distortion</p>
-                            <div class="text-3xl font-black mb-6">$129.00</div>
-                            <button class="w-full bg-[#00F5D4] text-black py-4 rounded-xl font-black text-xs glow-cyan mb-3 uppercase">Buy License</button>
-                            <p class="text-[9px] text-center text-gray-500 uppercase tracking-tighter">Instant Digital Delivery • VST3 / AU / AAX</p>
+                <div class="forum-card border border-gray bg-surface rounded-2xl p-6 transition-all mb-6">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <div class="w-12 h-12 bg-purple-500 rounded-lg flex-shrink-0"></div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-lg">Hyperpop Vocal Processing Help</h3>
+                            <p class="text-xs text-gray-500">Posted by @LofiLuna • 2 hours ago • <span class="accent-cyan">High Priority</span></p>
                         </div>
                     </div>
+                    
+                    <div class="bg-black/50 rounded-xl p-4 border border-gray mb-4 flex items-center space-x-4">
+                        <button class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center pl-1">▶</button>
+                        <div class="flex-1 h-8 flex items-center space-x-0.5">
+                            <div class="w-1 bg-[#00F5D4] h-4"></div><div class="w-1 bg-[#00F5D4] h-6"></div><div class="w-1 bg-[#00F5D4] h-2"></div><div class="w-1 bg-[#00F5D4] h-8"></div><div class="w-1 bg-[#00F5D4] h-5"></div><div class="w-1 bg-gray-700 h-4"></div><div class="w-1 bg-gray-700 h-6"></div><div class="w-1 bg-gray-700 h-3"></div><div class="w-1 bg-gray-700 h-7"></div>
+                        </div>
+                        <span class="text-[10px] font-mono">0:45 / 2:30</span>
+                    </div>
 
-                    <div class="lg:col-span-8 space-y-12">
+                    <div class="space-y-4">
+                        <p class="text-sm text-gray-300">"Having trouble getting the vocals to sit above the heavy synth lead. Any plugin suggestions?"</p>
                         
-                        <div>
-                            <div class="flex items-center justify-between mb-6">
-                                <h4 class="font-syne text-lg uppercase">User Reviews (128)</h4>
-                                <div class="flex items-center space-x-1 accent-cyan">
-                                    <span>★★★★★</span>
-                                    <span class="text-xs text-white">4.9</span>
-                                </div>
+                        <div class="bg-black rounded-xl p-4 border-l-4 border-[#00F5D4]">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[10px] font-bold accent-cyan">VERIFIED PRO FEEDBACK: @MixMaster_Dan</span>
+                                <span class="text-[9px] text-gray-500">Earned $42.00 this week</span>
                             </div>
-
-                            <div class="space-y-4">
-                                <div class="bg-surface/50 border border-gray p-5 rounded-2xl">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <div>
-                                            <span class="text-xs font-bold block">@TechnoTom</span>
-                                            <span class="text-[9px] text-gray-500 uppercase">Verified Producer</span>
-                                        </div>
-                                        <span class="text-[#00F5D4] text-[10px]">★★★★★</span>
-                                    </div>
-                                    <p class="text-xs text-gray-300 leading-relaxed italic">"The best tube emulation for 808s. I use the 'Warm Tube' setting on almost every master bus now. Worth every penny."</p>
-                                </div>
-                                <div class="bg-surface/50 border border-gray p-5 rounded-2xl">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <div>
-                                            <span class="text-xs font-bold block">@Lofi_Lilly</span>
-                                            <span class="text-[9px] text-gray-500 uppercase">Amateur Lover</span>
-                                        </div>
-                                        <span class="text-[#00F5D4] text-[10px]">★★★★★</span>
-                                    </div>
-                                    <p class="text-xs text-gray-300 leading-relaxed italic">"A bit complex at first, but the 'Brain AI' on PeerPlug helped me find the right preset for my vocals."</p>
-                                </div>
+                            <p class="text-xs mb-3 text-gray-400 italic">"Your 2k-5k range is fighting the lead. Use a dynamic EQ to carve space only when the vocal hits."</p>
+                            
+                            <div class="flex items-center space-x-2 bg-surface p-2 rounded border border-gray inline-flex">
+                                <span class="text-[9px] font-bold">PRO RECOMMENDATION:</span>
+                                <a href="#" class="text-[9px] bg-[#00F5D4] text-black px-2 py-1 rounded font-black hover:scale-105 transition-transform">BUY SOOTHE2 (10% OFF)</a>
                             </div>
                         </div>
-
-                        <div class="bg-surface border border-gray rounded-3xl p-8">
-                            <h4 class="font-syne text-lg uppercase mb-6">Technical FAQ</h4>
-                            <div class="space-y-6">
-                                <div>
-                                    <p class="text-[10px] font-bold accent-cyan uppercase mb-2">Q: Does this require an iLok dongle?</p>
-                                    <p class="text-xs text-gray-400">No, Saturn 2 uses a simple license key system. No physical hardware required.</p>
-                                </div>
-                                <div class="border-t border-gray pt-6">
-                                    <p class="text-[10px] font-bold accent-cyan uppercase mb-2">Q: Is it Apple Silicon (M1/M2) Native?</p>
-                                    <p class="text-xs text-gray-400">Yes, it is fully optimized for ARM and Intel-based Macs.</p>
-                                </div>
-                                <div class="border-t border-gray pt-6">
-                                    <p class="text-[10px] font-bold accent-cyan uppercase mb-2">Q: Can I use this on two different computers?</p>
-                                    <p class="text-xs text-gray-400">Yes, a single license allows for up to 3 simultaneous activations.</p>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
 
-            <div id="forum-section" class="hidden"> ... </div>
-            <div id="feed-section" class="block"> ... </div>
+            <div id="feed-section" class="block">
+                <div class="max-w-md mx-auto aspect-[9/16] bg-surface rounded-3xl relative overflow-hidden border border-gray shadow-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#1a1a1c] to-[#0A0A0B] flex items-center justify-center">
+                        <div class="text-center opacity-30">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="font-syne uppercase tracking-widest text-sm">Video Discovery</p>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 w-full p-8 bg-gradient-to-t from-black via-black/80 to-transparent">
+                        <p class="font-bold text-sm tracking-tight">@BassGenius</p>
+                        <p class="text-xs text-gray-200 mb-6">Cleaning up the 808s using this specific rack.</p>
+                        <div class="flex space-x-3">
+                            <div class="w-14 h-14 bg-[#262629] rounded-xl border border-gray flex items-center justify-center p-2"><span class="text-[8px] font-black">PRO-Q 3</span></div>
+                            <div class="w-14 h-14 bg-[#262629] rounded-xl border border-gray flex items-center justify-center p-2"><span class="text-[8px] font-black">SATURN 2</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </section>
+
+        <aside class="hidden xl:flex w-80 p-6 flex flex-col space-y-6 overflow-y-auto bg-black border-l border-gray">
+            <h2 class="font-syne text-lg uppercase italic">Live Plugs</h2>
+            <div class="bg-surface border border-gray p-5 rounded-2xl hover:border-[#FF4081] transition-all cursor-pointer">
+                <span class="text-[9px] bg-[#FF4081] text-white px-2 py-1 rounded-full font-black uppercase">40% OFF</span>
+                <h3 class="font-bold text-sm mt-3">Decapitator</h3>
+                <p class="text-[10px] text-gray-500 font-bold mb-4 uppercase">Soundtoys</p>
+                <div class="text-xl font-black accent-cyan">$119.00</div>
+                <button class="w-full mt-4 bg-white/5 border border-gray py-2 rounded-lg text-[10px] font-bold hover:bg-[#00F5D4] hover:text-black">ADD TO CART</button>
+            </div>
+        </aside>
+
     </main>
 
     <script>
+        // Welcome Modal Function
+        function closeWelcome() {
+            const emailInput = document.getElementById('user-email').value;
+            if (emailInput) {
+                console.log("Email captured for discount:", emailInput);
+            }
+            document.getElementById('welcome-modal').classList.add('hidden');
+        }
+
         function showSection(section) {
             const feed = document.getElementById('feed-section');
             const forum = document.getElementById('forum-section');
-            const market = document.getElementById('market-section');
-            const sidebar = document.getElementById('market-sidebar');
-
-            // Hide all
-            [feed, forum, market, sidebar].forEach(el => el?.classList.add('hidden'));
-
-            if(section === 'market') {
-                market.classList.remove('hidden');
-                sidebar.classList.remove('hidden');
-                sidebar.classList.add('flex');
-            } else if(section === 'forum') {
+            if(section === 'forum') {
+                feed.classList.add('hidden');
                 forum.classList.remove('hidden');
             } else {
                 feed.classList.remove('hidden');
+                forum.classList.add('hidden');
             }
+        }
+
+        function aiAsk(userQuery, type) {
+            const chatBox = document.getElementById('ai-chat-box');
+            const chips = document.getElementById('ai-chips');
+            const responseDiv = document.getElementById('ai-response');
+            chips.classList.add('hidden');
+
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex justify-end mb-4";
+            userMsg.innerHTML = `<div class="bg-[#00F5D4]/20 border border-[#00F5D4]/40 p-3 rounded-lg text-[11px] text-white max-w-[90%]">${userQuery}</div>`;
+            chatBox.appendChild(userMsg);
+
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = "p-3 rounded-xl bg-surface border border-[#00F5D4]/20 animate-in slide-in-from-bottom-2";
+                aiMsg.innerHTML = `<p class="text-[9px] font-bold accent-cyan uppercase mb-1">Brain Insight</p><p class="text-[11px] text-gray-300">Based on PeerPlug forum data, the <strong>FabFilter Pro-Q 3</strong> is the #1 recommended tool for this issue.</p>`;
+                chatBox.appendChild(aiMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 600);
         }
     </script>
 </body>
