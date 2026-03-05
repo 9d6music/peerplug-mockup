@@ -13,72 +13,153 @@
         .bg-surface { background-color: #161618; }
         .border-gray { border-color: #262629; }
         .glow-cyan:hover { box-shadow: 0 0 15px rgba(0, 245, 212, 0.3); }
+        .category-tab.active { border-bottom: 2px solid #00F5D4; color: #00F5D4; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0A0A0B; }
+        ::-webkit-scrollbar-thumb { background: #262629; border-radius: 10px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col h-screen overflow-hidden">
 
-    <nav class="border-b border-gray p-4 flex justify-between items-center sticky top-0 bg-opacity-90 backdrop-blur-md z-50">
+    <nav class="border-b border-gray p-4 flex justify-between items-center bg-black/90 backdrop-blur-md z-50">
         <h1 class="font-syne text-2xl tracking-tighter accent-cyan">PEERPLUG🔌</h1>
-        <div class="space-x-6 hidden md:flex text-sm font-semibold uppercase tracking-widest">
-            <a href="#" class="hover:text-cyan-400">The Feed</a>
-            <a href="#" class="hover:text-cyan-400">Marketplace</a>
-            <a href="#" class="hover:text-cyan-400">My Studio</a>
+        <div class="space-x-8 hidden md:flex text-[10px] font-bold uppercase tracking-[0.2em]">
+            <a href="#" onclick="showSection('feed')" class="nav-link hover:text-cyan-400 transition-colors">The Feed</a>
+            <a href="#" onclick="showSection('forum')" class="nav-link hover:text-cyan-400 transition-colors">Submit Your Mix</a>
+            <a href="#" onclick="showSection('market')" class="nav-link hover:text-cyan-400 transition-colors">Marketplace</a>
+            <a href="#" class="text-[#FF4081]">Deals</a>
         </div>
-        <button class="bg-[#00F5D4] text-black px-4 py-2 rounded-sm font-bold text-xs glow-cyan">CONNECT WALLET</button>
+        <div class="flex items-center space-x-4">
+            <button class="bg-[#161618] border border-gray text-white px-3 py-1.5 rounded text-[10px] font-bold">LOG IN</button>
+            <button class="bg-[#00F5D4] text-black px-4 py-1.5 rounded font-bold text-[10px] glow-cyan">JOIN FREE</button>
+        </div>
     </nav>
 
-    <main class="flex-1 flex flex-col md:flex-row h-screen overflow-hidden">
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
         
-        <aside class="w-full md:w-80 border-r border-gray bg-surface p-6 flex flex-col">
-            <h2 class="font-syne text-lg mb-4">THE BRAIN AI</h2>
-            <div class="flex-1 bg-black rounded-lg p-4 mb-4 text-sm overflow-y-auto space-y-4 border border-gray">
-                <p class="text-gray-400 italic">"How can I help your mix today?"</p>
-                <div class="bg-[#161618] p-3 rounded-md border-l-2 border-[#00F5D4]">
-                    <p class="text-xs font-bold accent-cyan mb-1">RECOMMENDATION</p>
-                    <p>Try <strong>FabFilter Saturn 2</strong> for that low-end warmth. Currently 30% off!</p>
-                    <button class="mt-2 text-[10px] bg-white text-black px-2 py-1 rounded">VIEW DEAL</button>
-                </div>
+        <aside id="market-sidebar" class="hidden w-full md:w-64 border-r border-gray bg-surface p-6 flex flex-col h-full overflow-y-auto">
+            <h2 class="font-syne text-sm tracking-widest uppercase mb-6 opacity-50">Categories</h2>
+            <div class="space-y-4">
+                <button class="w-full text-left text-xs font-bold hover:text-[#00F5D4] transition-colors">ALL PLUGINS</button>
+                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">COMPRESSION</button>
+                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">EQUALIZERS</button>
+                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">SATURATION</button>
+                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">REVERB & DELAY</button>
+                <button class="w-full text-left text-xs font-bold opacity-40 hover:opacity-100 transition-opacity">SYNTHS</button>
             </div>
-            <input type="text" placeholder="Ask about a plugin..." class="bg-black border border-gray rounded p-2 text-sm focus:outline-none focus:border-[#00F5D4]">
         </aside>
 
-        <section class="flex-1 overflow-y-auto p-4 space-y-8 bg-black">
-            <div class="max-w-md mx-auto aspect-[9/16] bg-surface rounded-2xl relative overflow-hidden border border-gray">
-                <div class="absolute inset-0 flex items-center justify-center text-gray-700 uppercase font-black text-4xl opacity-20">VIDEO PLAYBACK</div>
-                <div class="absolute bottom-0 w-full p-6 bg-gradient-to-t from-black to-transparent">
-                    <p class="font-bold">@SynthMaster</p>
-                    <p class="text-xs text-gray-300 mb-4">How I get that wide vocal sound using PeerPlug links.</p>
-                    <div class="flex space-x-2">
-                        <div class="w-12 h-12 bg-white rounded-md border-2 border-[#00F5D4] flex items-center justify-center text-[8px] text-black font-bold">VST</div>
-                        <div class="w-12 h-12 bg-white rounded-md flex items-center justify-center text-[8px] text-black font-bold">VST</div>
+        <section id="main-content" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 bg-black">
+            
+            <div id="market-section" class="hidden animate-in fade-in duration-500">
+                <div class="mb-10">
+                    <h2 class="font-syne text-4xl tracking-tighter uppercase italic mb-4">The Plugin Rack</h2>
+                    <div class="flex space-x-6 border-b border-gray text-[10px] font-bold uppercase tracking-widest pb-2">
+                        <a href="#" class="category-tab active">Trending</a>
+                        <a href="#" class="category-tab">Dynamics</a>
+                        <a href="#" class="category-tab">Tone</a>
+                        <a href="#" class="category-tab">Spatial</a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <div class="lg:col-span-4">
+                        <div class="bg-surface border border-gray p-6 rounded-3xl sticky top-0">
+                            <div class="aspect-square bg-gradient-to-br from-cyan-900/20 to-black rounded-xl mb-6 flex items-center justify-center border border-gray">
+                                <span class="font-syne text-4xl opacity-20">S+</span>
+                            </div>
+                            <h3 class="font-bold text-2xl mb-1">Saturn 2</h3>
+                            <p class="text-xs text-gray-500 mb-4">Multi-band Saturation & Distortion</p>
+                            <div class="text-3xl font-black mb-6">$129.00</div>
+                            <button class="w-full bg-[#00F5D4] text-black py-4 rounded-xl font-black text-xs glow-cyan mb-3 uppercase">Buy License</button>
+                            <p class="text-[9px] text-center text-gray-500 uppercase tracking-tighter">Instant Digital Delivery • VST3 / AU / AAX</p>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-8 space-y-12">
+                        
+                        <div>
+                            <div class="flex items-center justify-between mb-6">
+                                <h4 class="font-syne text-lg uppercase">User Reviews (128)</h4>
+                                <div class="flex items-center space-x-1 accent-cyan">
+                                    <span>★★★★★</span>
+                                    <span class="text-xs text-white">4.9</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="bg-surface/50 border border-gray p-5 rounded-2xl">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <span class="text-xs font-bold block">@TechnoTom</span>
+                                            <span class="text-[9px] text-gray-500 uppercase">Verified Producer</span>
+                                        </div>
+                                        <span class="text-[#00F5D4] text-[10px]">★★★★★</span>
+                                    </div>
+                                    <p class="text-xs text-gray-300 leading-relaxed italic">"The best tube emulation for 808s. I use the 'Warm Tube' setting on almost every master bus now. Worth every penny."</p>
+                                </div>
+                                <div class="bg-surface/50 border border-gray p-5 rounded-2xl">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <span class="text-xs font-bold block">@Lofi_Lilly</span>
+                                            <span class="text-[9px] text-gray-500 uppercase">Amateur Lover</span>
+                                        </div>
+                                        <span class="text-[#00F5D4] text-[10px]">★★★★★</span>
+                                    </div>
+                                    <p class="text-xs text-gray-300 leading-relaxed italic">"A bit complex at first, but the 'Brain AI' on PeerPlug helped me find the right preset for my vocals."</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-surface border border-gray rounded-3xl p-8">
+                            <h4 class="font-syne text-lg uppercase mb-6">Technical FAQ</h4>
+                            <div class="space-y-6">
+                                <div>
+                                    <p class="text-[10px] font-bold accent-cyan uppercase mb-2">Q: Does this require an iLok dongle?</p>
+                                    <p class="text-xs text-gray-400">No, Saturn 2 uses a simple license key system. No physical hardware required.</p>
+                                </div>
+                                <div class="border-t border-gray pt-6">
+                                    <p class="text-[10px] font-bold accent-cyan uppercase mb-2">Q: Is it Apple Silicon (M1/M2) Native?</p>
+                                    <p class="text-xs text-gray-400">Yes, it is fully optimized for ARM and Intel-based Macs.</p>
+                                </div>
+                                <div class="border-t border-gray pt-6">
+                                    <p class="text-[10px] font-bold accent-cyan uppercase mb-2">Q: Can I use this on two different computers?</p>
+                                    <p class="text-xs text-gray-400">Yes, a single license allows for up to 3 simultaneous activations.</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
+
+            <div id="forum-section" class="hidden"> ... </div>
+            <div id="feed-section" class="block"> ... </div>
+
         </section>
-
-        <aside class="hidden lg:flex w-80 p-6 flex flex-col space-y-6 overflow-y-auto">
-            <h2 class="font-syne text-lg">LIVE PLUGS (DEALS)</h2>
-            
-            <div class="bg-surface border border-gray p-4 rounded-lg hover:border-[#FF4081] transition-colors cursor-pointer">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-[10px] bg-[#FF4081] text-white px-2 py-0.5 rounded-full font-bold">-40% OFF</span>
-                    <span class="text-xs text-gray-500 font-mono">CODE: PLUG20</span>
-                </div>
-                <h3 class="font-bold">Valhalla VintageVerb</h3>
-                <p class="text-xs text-gray-400 uppercase mb-3">Reverb / Spatial</p>
-                <div class="text-xl font-bold accent-cyan">$50.00</div>
-            </div>
-
-            <div class="bg-surface border border-gray p-4 rounded-lg">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-[10px] bg-gray-600 text-white px-2 py-0.5 rounded-full font-bold">NEW RELEASE</span>
-                </div>
-                <h3 class="font-bold">Portal by Output</h3>
-                <p class="text-xs text-gray-400 uppercase mb-3">Granular FX</p>
-                <div class="text-xl font-bold accent-cyan">$149.00</div>
-            </div>
-        </aside>
-
     </main>
+
+    <script>
+        function showSection(section) {
+            const feed = document.getElementById('feed-section');
+            const forum = document.getElementById('forum-section');
+            const market = document.getElementById('market-section');
+            const sidebar = document.getElementById('market-sidebar');
+
+            // Hide all
+            [feed, forum, market, sidebar].forEach(el => el?.classList.add('hidden'));
+
+            if(section === 'market') {
+                market.classList.remove('hidden');
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('flex');
+            } else if(section === 'forum') {
+                forum.classList.remove('hidden');
+            } else {
+                feed.classList.remove('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
